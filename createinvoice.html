@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Invoice with GetAlby</title>
+  <link rel="stylesheet" href="style.css"> <!-- Vincula la hoja de estilos -->
+</head>
+<body>
+  <div class="container">
+    <h1>Generate Lightning Invoice</h1>
+    <label for="amount">Amount (satoshis):</label>
+    <input type="number" id="amount" placeholder="Enter amount in satoshis" />
+    <label for="memo">Memo:</label>
+    <input type="text" id="memo" placeholder="Enter a memo" />
+    <button id="generateInvoiceBtn">Generate Invoice</button>
+    <div id="invoiceDetails" class="invoice-details"></div>
+  </div>
+
+  <script>
+    async function generateInvoice() {
+      const amountInput = document.getElementById("amount").value;
+      const amount = parseInt(amountInput, 10);
+      const memo = document.getElementById("memo").value;
+
+      if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid amount in satoshis.");
+        return;
+      }
+
+      if (!memo) {
+        alert("Please enter a memo.");
+        return;
+      }
+
+      if (window.webln) {
+        try {
+          await window.webln.enable();
+          const invoice = await window.webln.makeInvoice({ amount, memo });
+          document.getElementById("invoiceDetails").innerHTML = `
+            <p><strong>Invoice:</strong> ${invoice.paymentRequest}</p>
+            <p><strong>Amount:</strong> ${amount} satoshis</p>
+            <p><strong>Memo:</strong> ${memo}</p>
+          `;
+        } catch (err) {
+          console.error("Error generating invoice:", err);
+          document.getElementById("invoiceDetails").innerText = "Error generating invoice. Check console for details.";
+        }
+      } else {
+        alert("WebLN not available. Please install a WebLN-compatible wallet like GetAlby.");
+      }
+    }
+
+    document.getElementById("generateInvoiceBtn").addEventListener("click", generateInvoice);
+  </script>
+</body>
+</html>
+

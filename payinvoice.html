@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GetAlby WebLN Example</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.webln) {
+                try {
+                    await window.webln.enable();
+                    document.getElementById('status').innerText = "WebLN enabled!";
+                } catch (err) {
+                    console.error('Error enabling WebLN', err);
+                    document.getElementById('status').innerText = "Failed to enable WebLN.";
+                }
+            } else {
+                document.getElementById('status').innerText = "WebLN not available. Please install a WebLN-compatible wallet like GetAlby.";
+            }
+        });
+
+        async function sendPayment() {
+            const invoice = document.getElementById('invoice').value;
+            if (window.webln) {
+                try {
+                    const result = await window.webln.sendPayment(invoice);
+                    document.getElementById('result').innerText = `Payment successful! Preimage: ${result.preimage}`;
+                } catch (err) {
+                    console.error('Payment failed', err);
+                    document.getElementById('result').innerText = `Payment failed: ${err.message}`;
+                }
+            } else {
+                document.getElementById('result').innerText = "WebLN not available. Please install a WebLN-compatible wallet like GetAlby.";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>GetAlby WebLN Example</h1>
+        <p id="status">Checking WebLN availability...</p>
+        <input type="text" id="invoice" placeholder="Enter Lightning invoice">
+        <button onclick="sendPayment()">Pay Invoice</button>
+        <p id="result"></p>
+    </div>
+</body>
+</html>
+
